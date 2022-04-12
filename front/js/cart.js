@@ -7,7 +7,8 @@
 let inCart = JSON.parse(localStorage.getItem('cart'));
 console.log(inCart);
 
-//récuperer les 3 valeurs du canapé au panier
+
+//récuperer les 3 valeurs du produit au panier
 for (let product of inCart) {
   let idProduct = product._id;
   let quantityProduct = product.quantity;
@@ -17,10 +18,13 @@ for (let product of inCart) {
     .then((response) => response.json())
     .then((promise) => {
       let productDescription = promise;
+      console.log(productDescription)
 
       let productArticle = document.createElement("article")
       document.getElementById('cart__items').appendChild(productArticle)
       productArticle.classList.add("cart__item")
+      productArticle.setAttribute("data-id",idProduct)
+      productArticle.setAttribute("data-color", colorProduct)
   
       let productDiv1 = document.createElement("div")
       productArticle.appendChild(productDiv1)
@@ -89,36 +93,58 @@ for (let product of inCart) {
 
 //supprimer un produit du panier : selectionner le bouton"supprimer"
 let btnRemoveList= document.querySelectorAll(".deleteItem");
-      console.log(btnRemoveList)
-//déclarer la fonction removeFromCart..
- function removeFromCart(product){
- for(let product of inCart){
- inCart = inCart.filter(element => element._id != product._id);  
- console.log(inCart)
- }}
+      console.log( btnRemoveList)
 
- //et s'en servir ensuite:
+ //et s'en servir sur l'élément article ancetre le plus proche du bouton
  for (let btnRemove of btnRemoveList) {
   btnRemove.addEventListener ("click",(e) =>{
-  e.preventDefault();  
-  removeFromCart(btnRemove.closest('.cart__item'));  
+  e.preventDefault();
+
+  let productToRemove= btnRemove.closest('.cart__item');
+  let productToRemoveId = productToRemove.dataset.id; 
+  console.log(productToRemoveId)
+
+  inCart=inCart.filter(elt => elt._id !==productToRemoveId);
+  console.log(inCart);
+  //enregistrer la variable modifiée dans localStorage, puis rafraichir la page
+  localStorage.setItem('cart',JSON.stringify(inCart));
+  //window.location.href="cart.html";
+  location.reload();
+  alert("Votre article a bien été supprimé");
+
+  if (inCart ===0){
+    alert("Le panier est vide");
+  }
+  
+  
    })}
 
 //changer la qté du produit sur la page panier
 
-//qté affichée à récuperer / puis à  enregistrer sur local Storagepuis à reafficher (getItem) sur la page
-
-//déclarer variable de la quantité modifiée
-
  let itemQuantities = document.querySelectorAll('.itemQuantity');
- console.log(itemQuantities);
+ console.log( itemQuantities);
 //déclarer la fonction modifyQuantity
-function modifyQuantity(){
+function modifyQuantity(product,quantity){
   for(let itemQuantity of itemQuantities){  
     itemQuantity.addEventListener("change", (e)=>{
-    e.preventDefault();  
-  localStorage.setItem ('modifiedQuantity', itemQuantity.value)
-  localStorage.getItem ('modifiedQuantity', itemQuantity.value)
+    e.preventDefault();
+
+    let newQuantity= e.target.value;
+    console.log(newQuantity)
+//récupérer l'id du produit correspondant à cette modification de quantité
+let productOfItemQuantity=itemQuantity.closest('.cart__item');
+let productOfItemQuantityId=productOfItemQuantity.dataset.id;
+  
+let productToModifyQuantity=inCart.find(elt => elt._id ==productOfItemQuantityId);
+  console.log(productToModifyQuantity)
+
+productToModifyQuantity.quantity=newQuantity;
+  console.log(productToModifyQuantity)
+
+  localStorage.setItem('cart',JSON.stringify(inCart));
+   
+     
+
   })
   }
   }
@@ -127,8 +153,8 @@ function modifyQuantity(){
 
 
 
-    });
-}
+    }
+)}
 
 
 
