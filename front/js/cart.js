@@ -91,41 +91,39 @@ for (let product of inCart) {
       productDelete.classList.add("deleteItem");
       productDelete.innerHTML ='Supprimer';
 
-//supprimer un produit du panier : selectionner le bouton"supprimer"
+//SUPPRIMER UN PRODUIT DU PANIER
+
+  //selectionner le bouton"supprimer"
 let btnRemoveList= document.querySelectorAll(".deleteItem");
       console.log( btnRemoveList)
 
- //et s'en servir sur l'élément article ancetre le plus proche du bouton
+  //au clic sur ce bouton, lancer une fonction de filtre, pour supprimer l'elt spécifié:
  for (let btnRemove of btnRemoveList) {
   btnRemove.addEventListener ("click",(e) =>{
   e.preventDefault();
-
+      //definir la variable de l'article , ancetre du bouton
   let productToRemove= btnRemove.closest('.cart__item');
   let productToRemoveId = productToRemove.dataset.id; 
-  console.log(productToRemoveId)
-
-  inCart=inCart.filter(elt => elt._id !==productToRemoveId);
+  let productToRemoveColor=productToRemove.dataset.color; 
+  console.log(productToRemoveColor)
+      //filtrer le panier, pour supprimer l'élément spécifié
+  inCart=inCart.filter(elt => elt._id !==productToRemoveId || elt.colors !==productToRemoveColor);
   console.log(inCart);
-  //enregistrer la variable modifiée dans localStorage, puis rafraichir la page
-  localStorage.setItem('cart',JSON.stringify(inCart));
-  //window.location.href="cart.html";
+      //enregistrer la variable modifiée dans localStorage, puis rafraichir la page
+  localStorage.setItem('cart',JSON.stringify(inCart));  
   location.reload();
-  alert("Votre article a bien été supprimé");
-
-  if (inCart ===0){
-    alert("Le panier est vide");
-  }
-  
-  
+  alert("Votre article a bien été supprimé");   
    })}
 
-//changer la qté du produit sur la page panier
 
- let itemQuantities = document.querySelectorAll('.itemQuantity');
- console.log( itemQuantities);
+//CHANGER LA QUANTITE D UN PRODUIT
+    //sélectionner les inputs de quantité
+ let itemQuantityList = document.querySelectorAll('.itemQuantity');
+ console.log( itemQuantityList);
+
 //déclarer la fonction modifyQuantity
 function modifyQuantity(product,quantity){
-  for(let itemQuantity of itemQuantities){  
+  for(let itemQuantity of itemQuantityList){  
     itemQuantity.addEventListener("change", (e)=>{
     e.preventDefault();
 
@@ -134,27 +132,117 @@ function modifyQuantity(product,quantity){
 //récupérer l'id du produit correspondant à cette modification de quantité
 let productOfItemQuantity=itemQuantity.closest('.cart__item');
 let productOfItemQuantityId=productOfItemQuantity.dataset.id;
+let productOfItemQuantityColor=productOfItemQuantity.dataset.color;
   
-let productToModifyQuantity=inCart.find(elt => elt._id ==productOfItemQuantityId);
-  console.log(productToModifyQuantity)
-
+let productToModifyQuantity=inCart.find(elt => elt._id ==productOfItemQuantityId && elt.colors==productOfItemQuantityColor);
+//lui appliquer la nouvelle quantité
 productToModifyQuantity.quantity=newQuantity;
-  console.log(productToModifyQuantity)
-
-  localStorage.setItem('cart',JSON.stringify(inCart));
-   
-     
-
+console.log(productToModifyQuantity)
+//et enregistrer le tout dans localStorage
+localStorage.setItem('cart',JSON.stringify(inCart)); 
   })
   }
   }
 
-  modifyQuantity()
-
-
-
+modifyQuantity()
     }
 )}
+
+
+//VERIFIER LES DONNEES SAISIES PAR L UTILISATEUR
+
+let buttonOrder=document.getElementById('order');
+
+const regexName =(name)=>{
+  return /^[a-zA-Z]{2,15}$/.test(name);}
+
+const regexAddress =(code)=>{
+    return /^[a-zA-Z 0-9]{5-25}$/.test(code);}
+
+const regexEmail =(value)=>{
+    return  /^[a-zA-Z0-9_-]+@[a-zA-Z0-9-]{2,}[.][a-zA-Z]{2,3}$/.test(value);}
+    
+
+function controlFirstName(){
+  let inputFirstName =document.querySelector('#firstName').value;
+  if (regexName(inputFirstName)){
+    return true;
+  }else{
+    alert('Prénom invalide');
+    return false;
+  }
+}
+function controlLastName(){
+  let inputLastName=document.querySelector('#lastName').value;
+  if (regexName(inputLastName)){
+    return true;
+  }else{
+    alert('Nom invalide');
+    return false;
+  }
+}
+
+function controlCity(){
+let inputCity=document.querySelector('#city').value;
+if (regexName(inputLastCity)){
+  return true;
+}else{
+  alert('Ville invalide');
+  return false;}
+}
+
+function controlAddress(){
+  let inputAddress =document.querySelector('#address').value;
+  if (regexAddress(inputAddress)){
+    return true;
+  }else{
+    alert('Adresse invalide');
+    return false;
+  }
+}
+
+function controlEmail(){
+let inputEmail=document.querySelector('#email').value;
+if (regexEmail(inputEmail)){
+  return true;
+}else{
+  alert('Email invalide');
+  return false;
+  }
+}
+
+
+
+buttonOrder.addEventListener('click', (e)=>{
+  e.preventDefault();
+  controlFirstName();
+  controlLastName();
+  controlAddress();
+  controlEmail()
+  
+})
+
+
+
+
+//Via ce script vous spécifiez que l'email doit : 
+// - contenir une arobase et un point
+// - avant la présence de l'arobase nous pouvons trouver, des lettres quelconques
+//   (en minuscule ou majuscule), n'importe quel chiffre, et les caractères "-" ou "_"
+// - aprés l'arobase, la vérification reste la même mais on interdit la présence de "_"
+//   et il faut impérativement au moins de caractères entre l'arobase et le point
+// - aprés le point, nous devons une succession de 2 ou 3 caractères doivent être
+//   présentes afin de pouvoir valider l'adresse email.
+
+
+ 
+//
+
+
+//  inputEmail.addEventListener('change',(e)=>{
+//    e.preventDefault();
+//    validateEmail();
+// });
 
 
 
@@ -162,25 +250,6 @@ productToModifyQuantity.quantity=newQuantity;
  
 
 
-//changer la qté du produit sur la page panier
-
-//qté affichée à récuperer / puis à  enregistrer sur local Storagepuis à reafficher (getItem) sur la page
-
-//déclarer variable de la quantité modifiée
-
-// let itemQuantities = document.querySelectorAll('itemQuantity');
-
-// function modifyQuantity(){
-//   for(let itemQuantity of itemQuantities){
-
-//     itemQuantity.addEventListener(change, (e)=>{
-//     e.preventDefault();
-
-//  localStorage.setItem ('modifiedQuantity', itemQuantity.value)
-//  localStorage.getItem ('modifiedQuantity', itemQuantity.value)
-// })
-// }
-// }
 
 
 
