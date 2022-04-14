@@ -153,77 +153,87 @@ modifyQuantity()
 
 let buttonOrder=document.getElementById('order');
 
+let inputFirstName =document.querySelector('#firstName').value;
+let inputLastName=document.querySelector('#lastName').value;
+let inputCity=document.querySelector('#city').value;
+let inputAddress =document.querySelector('#address').value;
+let inputEmail=document.querySelector('#email').value;
+
+//cette regex autorise lettres chiffres apostrophe tiret et espace, entre 2 et 15 caracteres
 const regexName =(name)=>{
-  return /^[a-zA-Z]{2,15}$/.test(name);}
+  return /^[a-zA-Z\’\-\s]{2,15}$/.test(name);}
 
 const regexAddress =(code)=>{
-    return /^[a-zA-Z 0-9]{5-25}$/.test(code);}
+    return /^[a-zA-Z0-9\’\-\s]{4,}$/.test(code);}
 
+
+//cette regex verifie que l'email :
+// - doive contenir une arobase et un point
+// - puisse ,avant la présence de l'arobase, contenir des lettres, chiffres, et les caractères "-" ou "_"
+// - aprés l'arobase, la vérification reste la même mais on interdit la présence de "_"
+//   et il faut au moins 2 caractères entre l'arobase et le point
+// - après le point, obligation d'avoir une succession de 2 ou 3 caractères 
 const regexEmail =(value)=>{
     return  /^[a-zA-Z0-9_-]+@[a-zA-Z0-9-]{2,}[.][a-zA-Z]{2,3}$/.test(value);}
     
 
-function controlFirstName(){
-  let inputFirstName =document.querySelector('#firstName').value;
+function controlFirstName(){ 
+  let inputFirstName =document.querySelector('#firstName').value; 
   if (regexName(inputFirstName)){
+    document.getElementById('firstNameErrorMsg').innerText="";
     return true;
   }else{
     alert('Prénom invalide');
+    document.getElementById('firstNameErrorMsg').innerText="Saisie du prénom invalide";
     return false;
   }
 }
 function controlLastName(){
-  let inputLastName=document.querySelector('#lastName').value;
+  let inputLastName=document.querySelector('#lastName').value;  
   if (regexName(inputLastName)){
+    document.getElementById('lastNameErrorMsg').innerText="";
     return true;
   }else{
     alert('Nom invalide');
+    document.getElementById('lastNameErrorMsg').innerText="Saisie du nom invalide";
     return false;
   }
 }
 
 function controlCity(){
-let inputCity=document.querySelector('#city').value;
+  let inputCity=document.querySelector('#city').value;
 if (regexName(inputLastCity)){
+  document.getElementById('cityErrorMsg').innerText="";
   return true;
 }else{
   alert('Ville invalide');
+  document.getElementById('cityErrorMsg').innerText="Saisie de ville invalide";
   return false;}
 }
 
-function controlAddress(){
+function controlAddress(){  
   let inputAddress =document.querySelector('#address').value;
   if (regexAddress(inputAddress)){
+    document.getElementById('addressErrorMsg').innerText="";
     return true;
-  }else{
+  }else{    
     alert('Adresse invalide');
+    document.getElementById('addressErrorMsg').innerText="Saisie d'adresse invalide";
     return false;
   }
 }
 
 function controlEmail(){
-let inputEmail=document.querySelector('#email').value;
+  let inputEmail=document.querySelector('#email').value;
 if (regexEmail(inputEmail)){
+  document.getElementById('emailErrorMsg').innerText="";
   return true;
 }else{
   alert('Email invalide');
+  document.getElementById('emailErrorMsg').innerText="Saisie d'email invalide";
   return false;
   }
 }
-
-
-
-buttonOrder.addEventListener('click', (e)=>{
-  e.preventDefault();
-  controlFirstName();
-  controlLastName();
-  controlAddress();
-  controlEmail()
-  
-})
-
-
-
 
 //Via ce script vous spécifiez que l'email doit : 
 // - contenir une arobase et un point
@@ -235,14 +245,35 @@ buttonOrder.addEventListener('click', (e)=>{
 //   présentes afin de pouvoir valider l'adresse email.
 
 
- 
-//
+buttonOrder.addEventListener('click', (e)=>{
+  e.preventDefault();
+  controlFirstName();
+  controlLastName();
+  controlAddress();
+  controlEmail()
+  
+})
+
+// SI VALIDE , ENVOI DU FORMULAIRE AU LOCAL STORAGE
+
+if (controlFirstName()&& controlLastName()&& controlAddress() && controlEmail()){
+  //mettre l'objet contact dans localStorage
+}else{
+  alert("Veuillez remplir correctement le formulaire");
+}
+
+let contact={
+  firstName : inputFirstName,
+  lastName :inputLastName,
+  address : inputAddress,
+  city : inputCity,
+  email : inputEmail
+};
+console.log(contact)
 
 
-//  inputEmail.addEventListener('change',(e)=>{
-//    e.preventDefault();
-//    validateEmail();
-// });
+
+
 
 
 
