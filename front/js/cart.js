@@ -8,7 +8,7 @@ let inCart = JSON.parse(localStorage.getItem('cart'));
 console.log(inCart);
 
 
-//récuperer les 3 valeurs du produit au panier
+//récuperer les 3 valeurs de chaque produit du panier, puis toute la description de chaque produit
 for (let product of inCart) {
   let idProduct = product._id;
   let quantityProduct = product.quantity;
@@ -145,8 +145,11 @@ localStorage.setItem('cart',JSON.stringify(inCart));
   }
 
 modifyQuantity()
+console.log (inCart)
     }
 )}
+
+
 
 
 //VERIFIER LES DONNEES SAISIES PAR L UTILISATEUR
@@ -245,31 +248,82 @@ if (regexEmail(inputEmail)){
 //   présentes afin de pouvoir valider l'adresse email.
 
 
+// SI VALIDE , ENVOI DU FORMULAIRE AU LOCAL STORAGE
+
+// const contact ={
+//   firstName : inputFirstName,
+//   lastName :inputLastName,
+//   address : inputAddress,
+//   city : inputCity,
+//   email : inputEmail
+// };
+
+
 buttonOrder.addEventListener('click', (e)=>{
   e.preventDefault();
   controlFirstName();
   controlLastName();
   controlAddress();
-  controlEmail()
+  controlEmail();
+
+
   
-})
+ 
+  if (controlFirstName(inputFirstName)&& controlLastName(inputLastName)&& controlAddress(inputAddress) && controlEmail(inputEmail)){
+    //récupération des valeurs du formulaire, à mettre dans un objet, lui même à enregistrer dans localStorage  
+    const contact ={
+      firstName : document.querySelector('#firstName').value,
+      lastName :document.querySelector('#lastName').value,
+      address : document.querySelector('#address').value,
+      city : document.querySelector('#city').value ,
+      email : document.querySelector('#email').value
+    };    
+    localStorage.setItem('contact', JSON.stringify(contact)); 
 
-// SI VALIDE , ENVOI DU FORMULAIRE AU LOCAL STORAGE
-
-if (controlFirstName()&& controlLastName()&& controlAddress() && controlEmail()){
-  //mettre l'objet contact dans localStorage
-}else{
-  alert("Veuillez remplir correctement le formulaire");
+  }else{
+    alert("Veuillez remplir correctement le formulaire");
+  };
+  
+ //ENVOYER LES DONNEES VERS LE SERVEUR
+ //mettre les valeurs du formulaire et le panier dans un objet
+const dataToSend = {
+  panier : localStorage.getItem ('cart'),
+  contact : localStorage.getItem('contact')
 }
+console.log('donnees à envoyer vers lAPI :' + dataToSend);
 
-let contact={
-  firstName : inputFirstName,
-  lastName :inputLastName,
-  address : inputAddress,
-  city : inputCity,
-  email : inputEmail
-};
-console.log(contact)
+//Envoi vers le serveur
+
+ fetch ("http://localhost:3000/api/products/order",{
+  method:"POST",
+  headers:{
+  // "Accept":'application/json',
+  'Content-type':'application/json'},
+  body:JSON.stringify(dataToSend)})
+
+.then   (response =>response.json())
+  
+.then (data =>{
+  console.log(data)
+  //localStorage.setItem('orderId', data.orderId);
+   window.location.href ="confirmation.html?id="+ data.orderId;
+});
+   
+   
+  
+  //syntaxe du addEventListener
+});
+
+
+
+
+
+
+
+
+
+
+
 
 
 
