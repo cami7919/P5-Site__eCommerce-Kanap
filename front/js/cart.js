@@ -294,10 +294,10 @@ console.log('donnees à envoyer vers lAPI :' + dataToSend);
 
 //Envoi vers le serveur
 
- fetch ("http://localhost:3000/api/products/order",{
-  method:"POST",
+ fetch ('http://localhost:3000/api/products/order',{
+  method:'POST',
   headers:{
-  // "Accept":'application/json',
+   'Accept':'application/json',
   'Content-type':'application/json'},
   body:JSON.stringify(dataToSend)})
 
