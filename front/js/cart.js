@@ -63,11 +63,10 @@ for (let product of inCart) {
   
       let productDiv5 = document.createElement("div")
       productDiv4.appendChild(productDiv5)
-      productDiv5.classList.add("cart__item__content__settings__quantity")
+      productDiv5.classList.add("cart__item__content__settings__quantity") 
   
   
-  
-      //ici on récupère des données de local storage (variables nommées plus haut)
+      //ci-dessous, on récupère des données de local storage (variables nommées plus haut)
       let productQuantity = document.createElement("p");
       productDiv5.appendChild(productQuantity);
       productQuantity.innerHTML = 'Qté :' ;
@@ -138,6 +137,10 @@ let productToModifyQuantity=inCart.find(elt => elt._id ==productOfItemQuantityId
 //lui appliquer la nouvelle quantité
 productToModifyQuantity.quantity=newQuantity;
 console.log(productToModifyQuantity)
+location.reload();
+
+//modifier aussi le prix
+productPrice.innerHTML = productDescription.price * newQuantity + ',00 €'
 //et enregistrer le tout dans localStorage
 localStorage.setItem('cart',JSON.stringify(inCart)); 
   })
@@ -146,6 +149,26 @@ localStorage.setItem('cart',JSON.stringify(inCart));
 
 modifyQuantity()
 console.log (inCart)
+
+// AFFICHER LES TOTAUX
+function getTotalOfProducts(){
+let totalOfProducts = 0;
+for (let product of inCart){
+  totalOfProducts +=product.quantity;
+return totalOfProducts;
+}}
+document.getElementById('totalQuantity').innerHTML= getTotalOfProducts().slice(1);
+
+function getTotalPrice(){
+  let totalPrice = 0;
+  for (let product of inCart){
+    totalPrice +=product.quantity*productDescription.price;
+  return totalPrice;
+  }}
+  document.getElementById('totalPrice').innerHTML= getTotalPrice();
+
+
+
     }
 )}
 
@@ -248,15 +271,6 @@ if (regexEmail(inputEmail)){
 //   présentes afin de pouvoir valider l'adresse email.
 
 
-// SI VALIDE , ENVOI DU FORMULAIRE AU LOCAL STORAGE
-
-// const contact ={
-//   firstName : inputFirstName,
-//   lastName :inputLastName,
-//   address : inputAddress,
-//   city : inputCity,
-//   email : inputEmail
-// };
 
 
 buttonOrder.addEventListener('click', (e)=>{

@@ -1,12 +1,7 @@
-
+//récupérer l'id dans l'url de la page
 const idProduct = new URL(window.location.href).searchParams.get("id");
 
 //aller chercher l'article correspondant à l'id de la page :
-
-// var url_string = window.location.href;
-// var url = new URL(url_string);
-// var idProduct = url.searchParams.get("c");
-
 console.log("idProduct:" + idProduct);
 
 let product = {};
@@ -49,8 +44,7 @@ displayProduct();
 
 //definir la fonction Ajouter au panier:
 let addIntoCart = () => {
-  console.log('bonjour')
-
+  
   //declarer le bouton ajouter
   let boutonAjouter = document.querySelector("#addToCart");
 
@@ -73,7 +67,7 @@ let addIntoCart = () => {
       quantity: quantityProduct
     };
 
-    //console.log('selectedProduct :' + selectedProduct)
+  
 
     //définir la variable qui recupere dans localStorage la valeur (selectedProduct) liée à la à la clé "cart" 
     let inCart = JSON.parse(localStorage.getItem('cart'));
