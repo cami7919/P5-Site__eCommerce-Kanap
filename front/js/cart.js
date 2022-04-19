@@ -261,14 +261,12 @@ if (regexEmail(inputEmail)){
   }
 }
 
-//Via ce script vous spécifiez que l'email doit : 
+//Via ce script , l'email doit : 
 // - contenir une arobase et un point
-// - avant la présence de l'arobase nous pouvons trouver, des lettres quelconques
-//   (en minuscule ou majuscule), n'importe quel chiffre, et les caractères "-" ou "_"
-// - aprés l'arobase, la vérification reste la même mais on interdit la présence de "_"
-//   et il faut impérativement au moins de caractères entre l'arobase et le point
-// - aprés le point, nous devons une succession de 2 ou 3 caractères doivent être
-//   présentes afin de pouvoir valider l'adresse email.
+// - avant l'arobase il peut y avoir : lettres (en minuscule ou majuscule),  chiffres et les caractères "-" ou "_"
+// - après l'arobase, la vérification reste la même mais on interdit la présence de "_"
+//   et il faut impérativement au moins 2 caractères entre l'arobase et le point
+// - après le point, il faut une succession de 2 ou 3 caractères .
 
 
 
