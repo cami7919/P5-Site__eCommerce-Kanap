@@ -151,18 +151,30 @@ modifyQuantity()
 console.log (inCart)
 
 // AFFICHER LES TOTAUX
-function getTotalOfProducts(){
-let totalOfProducts = 0;
-for (let product of inCart){
-  totalOfProducts +=product.quantity;
-return totalOfProducts;
-}}
-document.getElementById('totalQuantity').innerHTML= getTotalOfProducts().slice(1);
+
+//  function getTotalOfProducts(){
+// let totalOfProducts = 0;
+// for (let product of inCart){
+//   totalOfProducts +=product.quantity;
+// return totalOfProducts.slice(1);
+// }}
+
+// const totalOfProducts=
+//    inCart.reduce(product.quantity)
+// console.log(totalOfProducts)}
+
+
+
+
+
+// document.getElementById('totalQuantity').innerHTML= getTotalOfProducts() ;
+
+
 
 function getTotalPrice(){
   let totalPrice = 0;
   for (let product of inCart){
-    totalPrice +=product.quantity*productDescription.price;
+    totalPrice +=(product.quantity || newQuantity)*productDescription.price;
   return totalPrice;
   }}
   document.getElementById('totalPrice').innerHTML= getTotalPrice();
@@ -277,54 +289,79 @@ buttonOrder.addEventListener('click', (e)=>{
   controlLastName();
   controlAddress();
   controlEmail();
-
-
   
- 
-  if (controlFirstName(inputFirstName)&& controlLastName(inputLastName)&& controlAddress(inputAddress) && controlEmail(inputEmail)){
+  if (controlFirstName()&& controlLastName()&& controlAddress() && controlEmail()){
     //récupération des valeurs du formulaire, à mettre dans un objet, lui même à enregistrer dans localStorage  
-    const contact ={
+    const contact = {
       firstName : document.querySelector('#firstName').value,
       lastName :document.querySelector('#lastName').value,
       address : document.querySelector('#address').value,
       city : document.querySelector('#city').value ,
       email : document.querySelector('#email').value
-    };    
-    localStorage.setItem('contact', JSON.stringify(contact)); 
+    };
 
-  }else{
+    localStorage.setItem('contact', JSON.stringify(contact)); 
+    
+    //mettre les valeurs du formulaire et le panier dans un objet
+    let cartProduct =[];
+    cartProduct =inCart.map((p)=>p._id);
+    console.log(cartProduct)
+  
+    const dataToSend = {
+      //cart : localStorage.getItem('cart'),
+      cart : cartProduct,
+      contact : contact
+    };
+
+    //lancer la fonction sendData
+    fetch ('http://localhost:3000/api/products/order',{
+      method: 'POST',
+      headers: {
+        'Accept':'application/json',
+        'Content-type':'application/json'
+      },
+      body: JSON.stringify(dataToSend)
+    })
+    
+    .then (
+      response => response.json()
+    )
+      
+    .then (data => {
+      console.log(data)
+      localStorage.setItem('orderId', data.orderId);
+      //window.location.href ="confirmation.html?id="+ data.orderId;
+    });
+
+  } else {
     alert("Veuillez remplir correctement le formulaire");
   };
-  
- //ENVOYER LES DONNEES VERS LE SERVEUR
- //mettre les valeurs du formulaire et le panier dans un objet
-const dataToSend = {
-  panier : localStorage.getItem ('cart'),
-  contact : localStorage.getItem('contact')
-}
-console.log('donnees à envoyer vers lAPI :' + dataToSend);
 
-//Envoi vers le serveur
-
- fetch ('http://localhost:3000/api/products/order',{
-  method:'POST',
-  headers:{
-   'Accept':'application/json',
-  'Content-type':'application/json'},
-  body:JSON.stringify(dataToSend)})
-
-.then   (response =>response.json())
-  
-.then (data =>{
-  console.log(data)
-  //localStorage.setItem('orderId', data.orderId);
-   window.location.href ="confirmation.html?id="+ data.orderId;
+    //syntaxe du addEventListener
 });
-   
+
+
+  
+ //DECLARER LA FONCTION POUR ENVOYER LES DONNEES VERS LE SERVEUR
+ //function sendData(dataToSend) {
+//    fetch ('http://localhost:3000/api/products/order',{
+//   method:'POST',
+//   headers:{
+//   'Accept':'application/json',
+//   'Content-type':'application/json'},
+//   body:JSON.stringify(dataToSend)})
+
+// .then   (response =>response.json())
+  
+// .then (data =>{
+//   console.log(data)
+//   localStorage.setItem('orderId', data.orderId);
+//   //window.location.href ="confirmation.html?id="+ data.orderId;
+// });
+// } 
    
   
-  //syntaxe du addEventListener
-});
+
 
 
 
