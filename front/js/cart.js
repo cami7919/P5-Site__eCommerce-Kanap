@@ -1,6 +1,4 @@
 
-
-
 //Récupérer les données de localStorage : stockées sous forme ('product', {id, couleur, quantité})
 
 //déclarer la variable qui contient les 3 valeurs
@@ -117,10 +115,10 @@ let btnRemoveList= document.querySelectorAll(".deleteItem");
 
 //CHANGER LA QUANTITE D UN PRODUIT
     //sélectionner les inputs de quantité
- let itemQuantityList = document.querySelectorAll('.itemQuantity');
+let itemQuantityList = document.querySelectorAll('.itemQuantity');
  console.log( itemQuantityList);
 
-//déclarer la fonction modifyQuantity
+   //déclarer la fonction modifyQuantity
 function modifyQuantity(product,quantity){
   for(let itemQuantity of itemQuantityList){  
     itemQuantity.addEventListener("change", (e)=>{
@@ -128,67 +126,90 @@ function modifyQuantity(product,quantity){
 
     let newQuantity= e.target.value;
     console.log(newQuantity)
-//récupérer l'id du produit correspondant à cette modification de quantité
+   //récupérer l'id du produit correspondant à cette modification de quantité
 let productOfItemQuantity=itemQuantity.closest('.cart__item');
 let productOfItemQuantityId=productOfItemQuantity.dataset.id;
 let productOfItemQuantityColor=productOfItemQuantity.dataset.color;
   
 let productToModifyQuantity=inCart.find(elt => elt._id ==productOfItemQuantityId && elt.colors==productOfItemQuantityColor);
-//lui appliquer la nouvelle quantité
+    //lui appliquer la nouvelle quantité
 productToModifyQuantity.quantity=newQuantity;
 console.log(productToModifyQuantity)
 location.reload();
 
-//modifier aussi le prix
-productPrice.innerHTML = productDescription.price * newQuantity + ',00 €'
-//et enregistrer le tout dans localStorage
+    //modifier aussi les prix par article et total
+ let totalPricePerProduct= productDescription.price * newQuantity ;
+ productPrice.innerHTML =totalPricePerProduct+ ',00 €';
+
+ 
+
+   //et enregistrer le tout dans localStorage
 localStorage.setItem('cart',JSON.stringify(inCart)); 
   })
   }
   }
 
 modifyQuantity()
-console.log (inCart)
 
 // AFFICHER LES TOTAUX
+function getTotals(){
+  
+      
+//Qté totale
+ totalOfProducts = 0;
+ for (let product of inCart){
+  totalOfProducts+= parseInt(product.quantity); }
+ document.getElementById('totalQuantity').innerHTML= totalOfProducts;
+//prix total/ 
 
-//  function getTotalOfProducts(){
-// let totalOfProducts = 0;
-// for (let product of inCart){
-//   totalOfProducts +=product.quantity;
-// return totalOfProducts.slice(1);
-// }}
+//  let totalPrice = 0;
+// for (let i=0; i<productsQuantity.length; i++){
+//   totalPrice += (product[i].price)*productsQuantity[i];
+//   return totalPrice} ;  
+// document.getElementById('totalPrice').innerHTML= totalPrice
+// };
+ 
 
-// const totalOfProducts=
-//    inCart.reduce(product.quantity)
-// console.log(totalOfProducts)}
+//  console.log( itemQuantityList);
+//  for (itemQuantity of itemQuantityList){
+//  let itemLinked=itemQuantity.closest('.cart__item');
+//  console.log(itemLinked)
+//  let itemLinkedId= itemLinked.dataset.id;
+//  console.log(itemLinkedId)
+ 
+//  const result=proinCart.find(elt=>elt._id==itemLinked);
+//  console.log(result.price)
+//  }
+ 
 
+//  totalPrice = 0; 
+// for (let i=0; i<itemQuantityList.length; i++){
+//   totalPrice += (productDescription[i].price)*itemQuantity[i].valueAsNumber;
+// console.log(productDescription.price)}
 
+// document.getElementById('totalPrice').innerHTML= totalPrice;
+ }
+getTotals();
+// }
+//syntaxe de l'appel des produit (l.12 et l.19)
+})}
 
-
-
-// document.getElementById('totalQuantity').innerHTML= getTotalOfProducts() ;
-
-
-
-function getTotalPrice(){
-  let totalPrice = 0;
-  for (let product of inCart){
-    totalPrice +=(product.quantity || newQuantity)*productDescription.price;
-  return totalPrice;
-  }}
-  document.getElementById('totalPrice').innerHTML= getTotalPrice();
-
-
-
-    }
-)}
-
+//total Quantités avec la methode  reduce
+// let arrayQuantity=[]
+// for (let product of inCart){  
+//   //mettre les prix du panier dans le tableau totalQuantity
+//   arrayQuantity.push(parseInt(product.quantity))
+//   console.log (arrayQuantity)
+// }
+// //additionner tous les prix contenus dans le tableau totalQuantity
+// const reducer = (accumulator, currentValue) => accumulator + currentValue ;
+// const totalQuantity = arrayQuantity.reduce(reducer,0);
+      // //afficher:
+// document.getElementById('totalQuantity').innerHTML= totalQuantity ;
 
 
 
 //VERIFIER LES DONNEES SAISIES PAR L UTILISATEUR
-
 let buttonOrder=document.getElementById('order');
 
 let inputFirstName =document.querySelector('#firstName').value;
@@ -205,12 +226,6 @@ const regexAddress =(code)=>{
     return /^[a-zA-Z0-9\’\-\s]{4,}$/.test(code);}
 
 
-//cette regex verifie que l'email :
-// - doive contenir une arobase et un point
-// - puisse ,avant la présence de l'arobase, contenir des lettres, chiffres, et les caractères "-" ou "_"
-// - aprés l'arobase, la vérification reste la même mais on interdit la présence de "_"
-//   et il faut au moins 2 caractères entre l'arobase et le point
-// - après le point, obligation d'avoir une succession de 2 ou 3 caractères 
 const regexEmail =(value)=>{
     return  /^[a-zA-Z0-9_-]+@[a-zA-Z0-9-]{2,}[.][a-zA-Z]{2,3}$/.test(value);}
     
@@ -272,7 +287,6 @@ if (regexEmail(inputEmail)){
   return false;
   }
 }
-
 //Via ce script , l'email doit : 
 // - contenir une arobase et un point
 // - avant l'arobase il peut y avoir : lettres (en minuscule ou majuscule),  chiffres et les caractères "-" ou "_"
@@ -300,7 +314,7 @@ buttonOrder.addEventListener('click', (e)=>{
       email : document.querySelector('#email').value
     };
 
-    localStorage.setItem('contact', JSON.stringify(contact)); 
+    //localStorage.setItem('contact', JSON.stringify(contact)); 
     
     //mettre les valeurs du formulaire et le panier dans un objet
     let cartProduct =[];
@@ -309,7 +323,7 @@ buttonOrder.addEventListener('click', (e)=>{
   
     const dataToSend = {
       //cart : localStorage.getItem('cart'),
-      cart : cartProduct,
+      products : cartProduct,
       contact : contact
     };
 
@@ -330,35 +344,18 @@ buttonOrder.addEventListener('click', (e)=>{
     .then (data => {
       console.log(data)
       localStorage.setItem('orderId', data.orderId);
-      //window.location.href ="confirmation.html?id="+ data.orderId;
+      window.location.href ="confirmation.html?id="+ data.orderId;
     });
 
   } else {
     alert("Veuillez remplir correctement le formulaire");
   };
 
-    //syntaxe du addEventListener
+    //syntaxe du addEventListener (l.286)
 });
 
-
   
- //DECLARER LA FONCTION POUR ENVOYER LES DONNEES VERS LE SERVEUR
- //function sendData(dataToSend) {
-//    fetch ('http://localhost:3000/api/products/order',{
-//   method:'POST',
-//   headers:{
-//   'Accept':'application/json',
-//   'Content-type':'application/json'},
-//   body:JSON.stringify(dataToSend)})
 
-// .then   (response =>response.json())
-  
-// .then (data =>{
-//   console.log(data)
-//   localStorage.setItem('orderId', data.orderId);
-//   //window.location.href ="confirmation.html?id="+ data.orderId;
-// });
-// } 
    
   
 
