@@ -1,20 +1,20 @@
+//PAGE PRODUIT QUI AFFICHE LE PRODUIT SELECTIONNE, ET PERMET DE L AJOUTER AU PANIER
+
+
 //récupérer l'id dans l'url de la page
 const idProduct = new URL(window.location.href).searchParams.get("id");
 
 //aller chercher l'article correspondant à l'id de la page :
 console.log("idProduct:" + idProduct);
 
-//let product = {};
-
-const getProduct = async () => {
+let product={}
+async function getProduct  ()  {
   await fetch('http://localhost:3000/api/products/' + idProduct)
     .then((response) => response.json())
     .then((promise) => product = promise);
-  console.log(product);
-}
+  }
 
-//afficher le produit
-
+//afficher le produit et ses caractéristiques
 async function displayProduct() {
   await getProduct();
 
@@ -46,10 +46,10 @@ displayProduct();
 let addIntoCart = () => {
   
   //declarer le bouton ajouter
-  let boutonAjouter = document.querySelector("#addToCart");
+  let buttonAdd = document.querySelector("#addToCart");
 
   // creer un evenement au clic
-  boutonAjouter.addEventListener("click", (event) => {
+  buttonAdd.addEventListener("click", (event) => {
     event.preventDefault();
     //=toute action par défaut, normalement exécutée par le navigateur, n'aura pas lieu.
 
@@ -66,7 +66,6 @@ let addIntoCart = () => {
       colors: colorProduct,
       quantity: quantityProduct
     };
-
   
 
     //définir la variable qui recupere dans localStorage la valeur (selectedProduct) liée à la à la clé "cart" 

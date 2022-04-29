@@ -1,3 +1,6 @@
+//PAGE PANIER QUI : AFFICHE LES PRODUITS AJOUTES AU PANIER, PERMET DE MODIFIER LEUR QUANTITE OU DE LES SUPPRIMER, CONTIENT UN FORMULAIRE QUI DOIT ETRE VALIDE,
+// PERMET D ENVOYER LES DONNEES DE COMMANDE SI LE FORMULAIRE EST VALIDE
+
 
 //Récupérer les données de localStorage : stockées sous forme ('product', {id, couleur, quantité})
 
@@ -120,7 +123,7 @@ for (let product of inCart) {
 
 
       //déclarer la fonction modifyQuantity
-      function modifyQuantity(product, quantity) {
+      function modifyQuantity() {
         for (let itemQuantity of itemQuantityList) {
           itemQuantity.addEventListener("change", (e) => {
             e.preventDefault();
@@ -142,17 +145,15 @@ for (let product of inCart) {
             let totalPricePerProduct = productDescription.price * newQuantity;
             productPrice.innerHTML = totalPricePerProduct + ',00 €';
 
-
-
             //et enregistrer le tout dans localStorage
             localStorage.setItem('cart', JSON.stringify(inCart));
           })
         }
       }
-
       modifyQuantity();
 
       // AFFICHER LES TOTAUX
+      //quantité totale
       function getTotalQuantity() {
         totalOfProducts = 0;
         for (let product of inCart) {
@@ -161,46 +162,63 @@ for (let product of inCart) {
         document.getElementById('totalQuantity').innerHTML = totalOfProducts;
       }
 
-      async function getProductPrice(idProduct) {
-        let product = await fetch('http://localhost:3000/api/products/' + idProduct)
-        return product.price;
-      }
 
-      //prix total/
-      async function getTotalPrice() {
 
-        //faire le total des prix
-        let totalPrice = 0;
-        for (let product of inCart) {
-          totalPrice += await parseInt(getProductPrice(product._id)) * parseInt(productQuantity)
-        }
-        //afficher le prix total
-        document.getElementById('totalPrice').innerHTML = totalPrice;
-      }
+//prix total: l.14, il y aun appel au fetch (qui se referme l.219), qui donne la promesse "productDescription" ; 
+    //ci dessous tentatives de codes qui ne marchent pas : 
+    for (let i in inCart){
+       if (inCart[i]._id==productDescription._id){        
+      totalPrice+= productDescription.price *parseInt(inCart[i].quantity); }}
+      document.getElementById('totalPrice').textContent = totalPrice;
+
+
+
+// async function getProduct(idProduct)  {
+//   let product= fetch('http://localhost:3000/api/products/' + idProduct)
+//     .then((response) => response.json())
+//     .then((promise) => product=promise );  
+//   }
+
+
+
+// console.log(inCart)
+// function getProductInCartPrice(idProduct){
+// for (let product of inCart) {
+// let product=productDescription;
+// productInCartPrice=product.price;
+// return productInCartPrice;
+// }}
+
+// function getProductInCartQuantity(idProduct){
+//   for (let product of inCart){
+//     let productInCartQuantity = parseInt(product.quantity);
+//     return productInCartQuantity;
+//   }
+// }
+
+// const totalPrice= getProductInCartPrice(idProduct)*getProductInCartQuantity(idProduct);
+
+// document.getElementById('totalPrice').textContent = totalPrice;
+//donc trouver la quantité à partir de l'id dans le Cart avec la methode find() ?
+
+      // function getTotalPrice(inCart) {
+      //   let totalPrice = 0;
+      //   for (let i in inCart) {          
+      //   //  let product = await getProduct(inCart[i]._id);
+      //     totalPrice+= productDescription[i].price *parseInt(product[i].quantity);          
+      //   }
+      //   document.getElementById('totalPrice').textContent = totalPrice;
+      // }
+
 
 
 
       getTotalQuantity();
-      getTotalPrice();
+      //getTotalPrice();
 
-
-
-      //syntaxe de l'appel des produit (l.12 et l.19)
+      //syntaxe de l'appel des produit (iteration + promise):
     })
 }
-
-//total Quantités avec la methode  reduce
-// let arrayQuantity=[]
-// for (let product of inCart){  
-//   //mettre les prix du panier dans le tableau totalQuantity
-//   arrayQuantity.push(parseInt(product.quantity))
-//   console.log (arrayQuantity)
-// }
-// //additionner tous les prix contenus dans le tableau totalQuantity
-// const reducer = (accumulator, currentValue) => accumulator + currentValue ;
-// const totalQuantity = arrayQuantity.reduce(reducer,0);
-// //afficher:
-// document.getElementById('totalQuantity').innerHTML= totalQuantity ;
 
 
 

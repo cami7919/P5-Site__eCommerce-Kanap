@@ -1,20 +1,14 @@
-console.log('bonjour');
+//PAGE D ACCUEIL QUI AFFICHE TOUS LES PRODUITS ET LEURS CARACTERISTIQUES
 
 
-
-
-//Récupération du tableau de produits disponibles
-getProducts();
-
-//Création des articles via la liste récupérée précédemment
-creationProducts();
-
+//Déclarer la fonction de récupération du tableau de produits disponibles
 async function getProducts() {
     let products = await fetch('http://localhost:3000/api/products');
     console.log("Les produits ont été récupérés !")
     return products.json();
 }
 
+//Déclarer la fonction d'affichage des articles, via la liste récupérée précédemment
 async function creationProducts() {
     let products = await getProducts()
     
@@ -56,7 +50,8 @@ async function creationProducts() {
     console.log("Les produits ont été crées !");
 }
 
-
+getProducts();
+creationProducts()
 
 
 
