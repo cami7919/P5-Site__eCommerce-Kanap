@@ -16,6 +16,7 @@ for (let product of inCart) {
   let quantityProduct = product.quantity;
   let colorProduct = product.colors;
   console.log(product);
+  
   fetch('http://localhost:3000/api/products/' + idProduct)
     .then((response) => response.json())
     .then((promise) => {

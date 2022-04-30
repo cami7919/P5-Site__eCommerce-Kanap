@@ -7,7 +7,7 @@ const idProduct = new URL(window.location.href).searchParams.get("id");
 //aller chercher l'article correspondant à l'id de la page :
 console.log("idProduct:" + idProduct);
 
-let product={}
+ let product={}
 async function getProduct  ()  {
   await fetch('http://localhost:3000/api/products/' + idProduct)
     .then((response) => response.json())
