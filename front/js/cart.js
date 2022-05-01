@@ -14,8 +14,7 @@ console.log(inCart);
 for (let product of inCart) {
   let idProduct = product._id;
   let quantityProduct = product.quantity;
-  let colorProduct = product.colors;
-  console.log(product);
+  let colorProduct = product.colors;  
   
   fetch('http://localhost:3000/api/products/' + idProduct)
     .then((response) => response.json())
@@ -166,11 +165,11 @@ for (let product of inCart) {
 
 
 //prix total: l.14, il y aun appel au fetch (qui se referme l.219), qui donne la promesse "productDescription" ; 
-    //ci dessous tentatives de codes qui ne marchent pas : 
-    for (let i in inCart){
-       if (inCart[i]._id==productDescription._id){        
-      totalPrice+= productDescription.price *parseInt(inCart[i].quantity); }}
-      document.getElementById('totalPrice').textContent = totalPrice;
+    // ci dessous tentatives de codes qui ne marchent pas : 
+    // for (let i in inCart){
+    //    if (inCart[i]._id==productDescription._id){        
+    //   totalPrice+= productDescription.price *parseInt(inCart[i].quantity); }}
+    //   document.getElementById('totalPrice').textContent = totalPrice;
 
 
 
@@ -202,20 +201,36 @@ for (let product of inCart) {
 // document.getElementById('totalPrice').textContent = totalPrice;
 //donc trouver la quantité à partir de l'id dans le Cart avec la methode find() ?
 
-      // function getTotalPrice(inCart) {
-      //   let totalPrice = 0;
-      //   for (let i in inCart) {          
-      //   //  let product = await getProduct(inCart[i]._id);
-      //     totalPrice+= productDescription[i].price *parseInt(product[i].quantity);          
-      //   }
-      //   document.getElementById('totalPrice').textContent = totalPrice;
-      // }
+      function getTotalPrice() {
+        let totalPrice = 0;
+        for (let product of inCart) {          
+          let idProduct = product._id;          
+          fetch('http://localhost:3000/api/products/' + idProduct)          
+          .then((response) => response.json())          
+          .then( 
+            (myProductDescription) => 
+            {  
+            let myTotal =   parseInt(product.quantity)*myProductDescription.price;
+
+          
+             
+
+             totalPrice += myTotal ;
+             console.log(totalPrice)
+              // myProductDescription.price* parseInt(product.quantity);
+           
+            //  ;          
+            }
+          )
+        }
+        document.getElementById('totalPrice').textContent = totalPrice;
+      }
 
 
 
 
       getTotalQuantity();
-      //getTotalPrice();
+      getTotalPrice();
 
       //syntaxe de l'appel des produit (iteration + promise):
     })
