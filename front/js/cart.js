@@ -1,13 +1,113 @@
+//PAGE CART.JS QUI PERMET DE :
+// - AFFICHER LES PRODUITS DU PANIER, avec possibilité de les supprimer ou moduifier leur quantité
+// - CONTROLER LA SAISIE CORRECTE DU FORMULAIRE PAR L UTILISATEUR
+// - ENVOYER LE PANIER+FORMULAIRE PUIS ARRIVER EN PAGE CONFIRMATION
+
+
+//DECLARATIONS DES FONCTIONS DE MODIFICATION DU PANIER :
+
+//SUPPRIMER UN PRODUIT DU PANIER
+function removeProduct() {
+  //selectionner le bouton"supprimer"
+  let btnRemoveList = document.querySelectorAll(".deleteItem");
+
+  //au clic sur ce bouton, lancer une fonction de filtre, pour supprimer l'elt spécifié:
+  for (let btnRemove of btnRemoveList) {
+    btnRemove.addEventListener("click", (e) => {
+      e.preventDefault();
+      //definir la variable de l'article , ancetre du bouton
+      let productToRemove = btnRemove.closest('.cart__item');
+      let productToRemoveId = productToRemove.dataset.id;
+      let productToRemoveColor = productToRemove.dataset.color;
+      console.log(productToRemoveColor)
+      //filtrer le panier, pour supprimer l'élément spécifié
+      inCart = inCart.filter(elt => elt._id !== productToRemoveId || elt.colors !== productToRemoveColor);
+      console.log(inCart);
+      //enregistrer la variable modifiée dans localStorage, puis rafraichir la page
+      localStorage.setItem('cart', JSON.stringify(inCart));
+      location.reload();
+      alert("Votre article a bien été supprimé");
+    })
+  }
+}
+
+//CHANGER LA QUANTITE D UN PRODUIT
+function modifyQuantity(product, quantity) {
+  //sélectionner les inputs de quantité
+  let itemQuantityList = document.querySelectorAll('.itemQuantity');
+
+  for (let itemQuantity of itemQuantityList) {
+    itemQuantity.addEventListener("change", (e) => {
+      e.preventDefault();
+
+      let newQuantity = e.target.value;
+      console.log(newQuantity)
+      //récupérer l'id du produit correspondant à cette modification de quantité
+      let productOfItemQuantity = itemQuantity.closest('.cart__item');
+      let productOfItemQuantityId = productOfItemQuantity.dataset.id;
+      let productOfItemQuantityColor = productOfItemQuantity.dataset.color;
+
+      let productToModifyQuantity = inCart.find(elt => elt._id == productOfItemQuantityId && elt.colors == productOfItemQuantityColor);
+      //lui appliquer la nouvelle quantité
+      productToModifyQuantity.quantity = newQuantity;
+      console.log(productToModifyQuantity)
+      //et enregistrer le tout dans localStorage
+      localStorage.setItem('cart', JSON.stringify(inCart));
+
+      location.reload();
+
+      //modifier aussi les prix par article
+      let totalPricePerProduct = productDescription.price * newQuantity;
+      productPrice.innerHTML = totalPricePerProduct + ',00 €';
+
+    })
+  }
+}
+
+// CALCULER ET AFFICHER QUANTITE TOTALE
+function getTotalQuantity() {
+  totalOfProducts = 0;
+  for (let product of inCart) {
+    totalOfProducts += parseInt(product.quantity)
+  };
+  document.getElementById('totalQuantity').innerHTML = totalOfProducts;
+}
+
+//CALCULER ET AFFICHER PRIX TOTAL
+async function getTotalPrice() {
+  //faire le total des prix
+  let totalPrice = 0;
+  for (let product of inCart) {
+    let idProduct = product._id;
+    console.log(idProduct)
+    let productQuantity = product.quantity;
+    console.log(productQuantity);
+    // let productPrice=getProductPrice(idProduct);
+    // console.log(productPrice)
+    fetch('http://localhost:3000/api/products/' + idProduct)
+      .then((response) => response.json())
+      .then((productDescription) => {
+        let productPrice = productDescription.price;
+        console.log(productPrice)
+        console.log(productQuantity)
+        totalPrice += productPrice * parseFloat(productQuantity);
+        console.log(totalPrice)
+        //afficher le prix total
+        document.getElementById('totalPrice').innerHTML = totalPrice;
+      })
+  }
+}
+
+
+//AFFICHER LES PRODUITS DU PANIER, ET UTILISER LES FONCTIONS DE MODIFICATION DU PANIER:
 
 //Récupérer les données de localStorage : stockées sous forme ('product', {id, couleur, quantité})
-
 //déclarer la variable qui contient les 3 valeurs
 let inCart = JSON.parse(localStorage.getItem('cart'));
 console.log(inCart);
 
 
-
-//récuperer les 3 valeurs de chaque produit du panier, puis toute la description de chaque produit, pour afficher les produits du panier
+//récuperer toute la description de chaque produit, pour les afficher :
 for (let product of inCart) {
   let idProduct = product._id;
   let quantityProduct = product.quantity;
@@ -93,114 +193,14 @@ for (let product of inCart) {
       modifyQuantity();
       getTotalQuantity();
       getTotalPrice();
- //syntaxe de l'appel des produit (l.12 et l.19)
-})
-}
-//SUPPRIMER UN PRODUIT DU PANIER
-function removeProduct(){
-      //selectionner le bouton"supprimer"
-      let btnRemoveList = document.querySelectorAll(".deleteItem");
-
-      //au clic sur ce bouton, lancer une fonction de filtre, pour supprimer l'elt spécifié:
-      for (let btnRemove of btnRemoveList) {
-        btnRemove.addEventListener("click", (e) => {
-          e.preventDefault();
-          //definir la variable de l'article , ancetre du bouton
-          let productToRemove = btnRemove.closest('.cart__item');
-          let productToRemoveId = productToRemove.dataset.id;
-          let productToRemoveColor = productToRemove.dataset.color;
-          console.log(productToRemoveColor)
-          //filtrer le panier, pour supprimer l'élément spécifié
-          inCart = inCart.filter(elt => elt._id !== productToRemoveId || elt.colors !== productToRemoveColor);
-          console.log(inCart);
-          //enregistrer la variable modifiée dans localStorage, puis rafraichir la page
-          localStorage.setItem('cart', JSON.stringify(inCart));
-          location.reload();
-          alert("Votre article a bien été supprimé");
-        })
-      }
-    }
-
-
-//CHANGER LA QUANTITE D UN PRODUIT
-function modifyQuantity(product, quantity) {
-      //sélectionner les inputs de quantité
-      let itemQuantityList = document.querySelectorAll('.itemQuantity');   
-      
-        for (let itemQuantity of itemQuantityList) {
-          itemQuantity.addEventListener("change", (e) => {
-            e.preventDefault();
-
-            let newQuantity = e.target.value;
-            console.log(newQuantity)
-            //récupérer l'id du produit correspondant à cette modification de quantité
-            let productOfItemQuantity = itemQuantity.closest('.cart__item');
-            let productOfItemQuantityId = productOfItemQuantity.dataset.id;
-            let productOfItemQuantityColor = productOfItemQuantity.dataset.color;
-
-            let productToModifyQuantity = inCart.find(elt => elt._id == productOfItemQuantityId && elt.colors == productOfItemQuantityColor);
-            //lui appliquer la nouvelle quantité
-            productToModifyQuantity.quantity = newQuantity;
-            console.log(productToModifyQuantity)
-            //et enregistrer le tout dans localStorage
-            localStorage.setItem('cart', JSON.stringify(inCart));
-
-            location.reload();
-
-            //modifier aussi les prix par article et total
-            let totalPricePerProduct = productDescription.price * newQuantity;
-            productPrice.innerHTML = totalPricePerProduct + ',00 €';
-
-
-
-          
-          })
-        }
-      }
-
-     
-
-// CALCULER ET AFFICHER QUANTITE TOTALE
-function getTotalQuantity() {
-        totalOfProducts = 0;
-        for (let product of inCart) {
-          totalOfProducts += parseInt(product.quantity)
-        };
-        document.getElementById('totalQuantity').innerHTML = totalOfProducts;
-      }
-
-
-    
-     
-
-//CALCULER ET AFFICHER PRIX TOTAL
-async function getTotalPrice() {
-  //faire le total des prix
-  let totalPrice = 0;
-  for (let product of inCart) {
-    let idProduct = product._id;
-    console.log(idProduct)
-    let productQuantity = product.quantity;
-    console.log(productQuantity);
-    // let productPrice=getProductPrice(idProduct);
-    // console.log(productPrice)
-    fetch('http://localhost:3000/api/products/' + idProduct)
-      .then((response) => response.json())
-      .then((productDescription) => {
-        let productPrice = productDescription.price;
-        console.log(productPrice)
-        console.log(productQuantity)
-        totalPrice += productPrice * parseFloat(productQuantity);
-        console.log(totalPrice)
-        //afficher le prix total
-        document.getElementById('totalPrice').innerHTML = totalPrice;
-      })
-  }
-
+      //syntaxe de l'appel des produit (l.12 et l.19)
+    })
 }
 
 
-//VERIFIER LES DONNEES SAISIES PAR L UTILISATEUR
+
+
+//VERIFIER LES DONNEES SAISIES PAR L UTILISATEUR : regex
 let buttonOrder = document.getElementById('order');
 
 let inputFirstName = document.querySelector('#firstName').value;
@@ -218,11 +218,9 @@ const regexAddress = (code) => {
   return /^[a-zA-Z0-9\’\-\s]{4,}$/.test(code);
 }
 
-
 const regexEmail = (value) => {
   return /^[a-zA-Z0-9_-]+@[a-zA-Z0-9-]{2,}[.][a-zA-Z]{2,3}$/.test(value);
 }
-
 
 function controlFirstName() {
   let inputFirstName = document.querySelector('#firstName').value;
@@ -291,7 +289,7 @@ function controlEmail() {
 
 
 
-
+//ENVOI DU FORMULAIRE ET DU PANIER AU CLIC APRES CONTROLE :
 buttonOrder.addEventListener('click', (e) => {
   e.preventDefault();
   controlFirstName();
@@ -309,15 +307,12 @@ buttonOrder.addEventListener('click', (e) => {
       email: document.querySelector('#email').value
     };
 
-    //localStorage.setItem('contact', JSON.stringify(contact)); 
-
     //mettre les valeurs du formulaire et le panier dans un objet
     let cartProduct = [];
     cartProduct = inCart.map((p) => p._id);
     console.log(cartProduct)
 
     const dataToSend = {
-      //cart : localStorage.getItem('cart'),
       products: cartProduct,
       contact: contact
     };
@@ -346,7 +341,7 @@ buttonOrder.addEventListener('click', (e) => {
     alert("Veuillez remplir correctement le formulaire");
   };
 
-  //syntaxe du addEventListener (l.286)
+  //syntaxe du addEventListener 
 });
 
 
