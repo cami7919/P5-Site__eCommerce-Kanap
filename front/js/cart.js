@@ -7,7 +7,7 @@ console.log(inCart);
 
 
 
-//récuperer les 3 valeurs de chaque produit du panier, puis toute la description de chaque produit
+//récuperer les 3 valeurs de chaque produit du panier, puis toute la description de chaque produit, pour afficher les produits du panier
 for (let product of inCart) {
   let idProduct = product._id;
   let quantityProduct = product.quantity;
@@ -88,8 +88,16 @@ for (let product of inCart) {
       productDelete.classList.add("deleteItem");
       productDelete.innerHTML = 'Supprimer';
 
-      //SUPPRIMER UN PRODUIT DU PANIER
 
+      removeProduct()
+      modifyQuantity();
+      getTotalQuantity();
+      getTotalPrice();
+ //syntaxe de l'appel des produit (l.12 et l.19)
+})
+}
+//SUPPRIMER UN PRODUIT DU PANIER
+function removeProduct(){
       //selectionner le bouton"supprimer"
       let btnRemoveList = document.querySelectorAll(".deleteItem");
 
@@ -111,16 +119,14 @@ for (let product of inCart) {
           alert("Votre article a bien été supprimé");
         })
       }
+    }
 
 
-
-      //CHANGER LA QUANTITE D UN PRODUIT
+//CHANGER LA QUANTITE D UN PRODUIT
+function modifyQuantity(product, quantity) {
       //sélectionner les inputs de quantité
-      let itemQuantityList = document.querySelectorAll('.itemQuantity');
-
-
-      //déclarer la fonction modifyQuantity
-      function modifyQuantity(product, quantity) {
+      let itemQuantityList = document.querySelectorAll('.itemQuantity');   
+      
         for (let itemQuantity of itemQuantityList) {
           itemQuantity.addEventListener("change", (e) => {
             e.preventDefault();
@@ -136,6 +142,9 @@ for (let product of inCart) {
             //lui appliquer la nouvelle quantité
             productToModifyQuantity.quantity = newQuantity;
             console.log(productToModifyQuantity)
+            //et enregistrer le tout dans localStorage
+            localStorage.setItem('cart', JSON.stringify(inCart));
+
             location.reload();
 
             //modifier aussi les prix par article et total
@@ -144,16 +153,15 @@ for (let product of inCart) {
 
 
 
-            //et enregistrer le tout dans localStorage
-            localStorage.setItem('cart', JSON.stringify(inCart));
+          
           })
         }
       }
 
-      modifyQuantity();
+     
 
-      // AFFICHER QUANTITE TOTALE
-      function getTotalQuantity() {
+// CALCULER ET AFFICHER QUANTITE TOTALE
+function getTotalQuantity() {
         totalOfProducts = 0;
         for (let product of inCart) {
           totalOfProducts += parseInt(product.quantity)
@@ -161,38 +169,35 @@ for (let product of inCart) {
         document.getElementById('totalQuantity').innerHTML = totalOfProducts;
       }
 
-      
-      getTotalQuantity();
-      getTotalPrice();
-            //syntaxe de l'appel des produit (l.12 et l.19)
-    })
-  }
-      
-//calcul du prix total
-      async function getTotalPrice() {
-        //faire le total des prix
-        let totalPrice = 0;
-        for (let product of inCart) {
-          let idProduct = product._id;
-          console.log(idProduct)
-          let productQuantity=product.quantity;
-          console.log(productQuantity);
-          // let productPrice=getProductPrice(idProduct);
-          // console.log(productPrice)
-          fetch('http://localhost:3000/api/products/' + idProduct)
-            .then((response) => response.json())
-              .then((productDescription) => {
-                let productPrice = productDescription.price;
-                console.log(productPrice)
-                console.log(productQuantity)
-          totalPrice +=  productPrice * parseFloat(productQuantity);
-          console.log(totalPrice)
-               //afficher le prix total
+
+    
+     
+
+//CALCULER ET AFFICHER PRIX TOTAL
+async function getTotalPrice() {
+  //faire le total des prix
+  let totalPrice = 0;
+  for (let product of inCart) {
+    let idProduct = product._id;
+    console.log(idProduct)
+    let productQuantity = product.quantity;
+    console.log(productQuantity);
+    // let productPrice=getProductPrice(idProduct);
+    // console.log(productPrice)
+    fetch('http://localhost:3000/api/products/' + idProduct)
+      .then((response) => response.json())
+      .then((productDescription) => {
+        let productPrice = productDescription.price;
+        console.log(productPrice)
+        console.log(productQuantity)
+        totalPrice += productPrice * parseFloat(productQuantity);
+        console.log(totalPrice)
+        //afficher le prix total
         document.getElementById('totalPrice').innerHTML = totalPrice;
-        }) 
-        }
-   
-      }
+      })
+  }
+
+}
 
 
 //VERIFIER LES DONNEES SAISIES PAR L UTILISATEUR
