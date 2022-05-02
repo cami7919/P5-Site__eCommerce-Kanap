@@ -152,7 +152,7 @@ for (let product of inCart) {
 
       modifyQuantity();
 
-      // AFFICHER LES TOTAUX
+      // AFFICHER QUANTITE TOTALE
       function getTotalQuantity() {
         totalOfProducts = 0;
         for (let product of inCart) {
@@ -161,47 +161,38 @@ for (let product of inCart) {
         document.getElementById('totalQuantity').innerHTML = totalOfProducts;
       }
 
-      async function getProductPrice(idProduct) {
-        let product = await fetch('http://localhost:3000/api/products/' + idProduct)
-        return product.price;
-      }
-
-      //prix total/
+      
+      getTotalQuantity();
+      getTotalPrice();
+            //syntaxe de l'appel des produit (l.12 et l.19)
+    })
+  }
+      
+//calcul du prix total
       async function getTotalPrice() {
-
         //faire le total des prix
         let totalPrice = 0;
         for (let product of inCart) {
-          totalPrice += await parseInt(getProductPrice(product._id)) * parseInt(productQuantity)
-        }
-        //afficher le prix total
+          let idProduct = product._id;
+          console.log(idProduct)
+          let productQuantity=product.quantity;
+          console.log(productQuantity);
+          // let productPrice=getProductPrice(idProduct);
+          // console.log(productPrice)
+          fetch('http://localhost:3000/api/products/' + idProduct)
+            .then((response) => response.json())
+              .then((productDescription) => {
+                let productPrice = productDescription.price;
+                console.log(productPrice)
+                console.log(productQuantity)
+          totalPrice +=  productPrice * parseFloat(productQuantity);
+          console.log(totalPrice)
+               //afficher le prix total
         document.getElementById('totalPrice').innerHTML = totalPrice;
+        }) 
+        }
+   
       }
-
-
-
-      getTotalQuantity();
-      getTotalPrice();
-
-
-
-      //syntaxe de l'appel des produit (l.12 et l.19)
-    })
-}
-
-//total Quantités avec la methode  reduce
-// let arrayQuantity=[]
-// for (let product of inCart){  
-//   //mettre les prix du panier dans le tableau totalQuantity
-//   arrayQuantity.push(parseInt(product.quantity))
-//   console.log (arrayQuantity)
-// }
-// //additionner tous les prix contenus dans le tableau totalQuantity
-// const reducer = (accumulator, currentValue) => accumulator + currentValue ;
-// const totalQuantity = arrayQuantity.reduce(reducer,0);
-// //afficher:
-// document.getElementById('totalQuantity').innerHTML= totalQuantity ;
-
 
 
 //VERIFIER LES DONNEES SAISIES PAR L UTILISATEUR
