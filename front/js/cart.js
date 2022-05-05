@@ -19,10 +19,10 @@ function removeProduct() {
       let productToRemove = btnRemove.closest('.cart__item');
       let productToRemoveId = productToRemove.dataset.id;
       let productToRemoveColor = productToRemove.dataset.color;
-      console.log(productToRemoveColor)
+      
       //filtrer le panier, pour supprimer l'élément spécifié
       inCart = inCart.filter(elt => elt._id !== productToRemoveId || elt.colors !== productToRemoveColor);
-      console.log(inCart);
+      
       //enregistrer la variable modifiée dans localStorage, puis rafraichir la page
       localStorage.setItem('cart', JSON.stringify(inCart));
       location.reload();
@@ -41,7 +41,7 @@ function modifyQuantity(product, quantity) {
       e.preventDefault();
 
       let newQuantity = e.target.value;
-      console.log(newQuantity)
+      
       //récupérer l'id du produit correspondant à cette modification de quantité
       let productOfItemQuantity = itemQuantity.closest('.cart__item');
       let productOfItemQuantityId = productOfItemQuantity.dataset.id;
@@ -49,8 +49,7 @@ function modifyQuantity(product, quantity) {
 
       let productToModifyQuantity = inCart.find(elt => elt._id == productOfItemQuantityId && elt.colors == productOfItemQuantityColor);
       //lui appliquer la nouvelle quantité
-      productToModifyQuantity.quantity = newQuantity;
-      console.log(productToModifyQuantity)
+      productToModifyQuantity.quantity = newQuantity;      
       //et enregistrer le tout dans localStorage
       localStorage.setItem('cart', JSON.stringify(inCart));
 
@@ -59,7 +58,6 @@ function modifyQuantity(product, quantity) {
       //modifier aussi les prix par article
       let totalPricePerProduct = productDescription.price * newQuantity;
       productPrice.innerHTML = totalPricePerProduct + ',00 €';
-
     })
   }
 }
@@ -69,7 +67,7 @@ function getTotalQuantity() {
   totalOfProducts = 0;
   for (let product of inCart) {
     totalOfProducts += parseInt(product.quantity)
-  };
+  };//afficher la quantité totale:
   document.getElementById('totalQuantity').innerHTML = totalOfProducts;
 }
 
@@ -78,21 +76,15 @@ async function getTotalPrice() {
   //faire le total des prix
   let totalPrice = 0;
   for (let product of inCart) {
-    let idProduct = product._id;
-    console.log(idProduct)
+    let idProduct = product._id;    
     let productQuantity = product.quantity;
-    console.log(productQuantity);
-    // let productPrice=getProductPrice(idProduct);
-    // console.log(productPrice)
+        
     fetch('http://localhost:3000/api/products/' + idProduct)
       .then((response) => response.json())
       .then((productDescription) => {
-        let productPrice = productDescription.price;
-        console.log(productPrice)
-        console.log(productQuantity)
-        totalPrice += productPrice * parseFloat(productQuantity);
-        console.log(totalPrice)
-        //afficher le prix total
+        let productPrice = productDescription.price;        
+        totalPrice += productPrice * parseFloat(productQuantity);        
+        //afficher le prix total :
         document.getElementById('totalPrice').innerHTML = totalPrice;
       })
   }
@@ -112,7 +104,7 @@ for (let product of inCart) {
   let idProduct = product._id;
   let quantityProduct = product.quantity;
   let colorProduct = product.colors;
-  console.log(product);
+  
   fetch('http://localhost:3000/api/products/' + idProduct)
     .then((response) => response.json())
     .then((promise) => {
@@ -218,6 +210,13 @@ const regexAddress = (code) => {
   return /^[a-zA-Z0-9\’\-\s]{4,}$/.test(code);
 }
 
+
+//La regex ci-dessous impose à l'email de: 
+// - contenir une arobase et un point
+// - avant l'arobase il peut y avoir : lettres (en minuscule ou majuscule),  chiffres et les caractères "-" ou "_"
+// - après l'arobase, idem , et on interdit la présence de "_"
+//   et il faut au moins 2 caractères entre l'arobase et le point
+// - après le point, il faut une succession de 2 ou 3 caractères .
 const regexEmail = (value) => {
   return /^[a-zA-Z0-9_-]+@[a-zA-Z0-9-]{2,}[.][a-zA-Z]{2,3}$/.test(value);
 }
@@ -280,12 +279,7 @@ function controlEmail() {
     return false;
   }
 }
-//Via ce script , l'email doit : 
-// - contenir une arobase et un point
-// - avant l'arobase il peut y avoir : lettres (en minuscule ou majuscule),  chiffres et les caractères "-" ou "_"
-// - après l'arobase, la vérification reste la même mais on interdit la présence de "_"
-//   et il faut impérativement au moins 2 caractères entre l'arobase et le point
-// - après le point, il faut une succession de 2 ou 3 caractères .
+
 
 
 

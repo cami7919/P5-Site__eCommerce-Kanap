@@ -47,25 +47,25 @@ displayProduct();
 
 
 
-//definir la fonction Ajouter au panier:
+//définir la fonction Ajouter au panier:
 let addIntoCart = () => {
 
-  //declarer le bouton ajouter
+  //déclarer le bouton ajouter
   let boutonAjouter = document.querySelector("#addToCart");
 
-  // creer un evenement au clic
+  // créer un événement au clic
   boutonAjouter.addEventListener("click", (event) => {
     event.preventDefault();
     //=toute action par défaut, normalement exécutée par le navigateur, n'aura pas lieu.
 
 
-    //recuperer les données du produit choisi (pour plus tard les stocker dans localStorage)
+    //récupérer les données du produit choisi (pour plus tard les stocker dans localStorage)
     let colorProduct = document.getElementById("colors").value;
     console.log('colorProduct :' + colorProduct)
     let quantityProduct = document.getElementById("quantity").value;
     console.log('quantityProduct :' + quantityProduct)
 
-    //creer l'objet qui contient les infos qu'on mettra dans localStorage
+    //créer l'objet qui contient les infos qu'on mettra dans localStorage
     let selectedProduct = {
       _id: idProduct,
       colors: colorProduct,
