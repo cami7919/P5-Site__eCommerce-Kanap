@@ -284,6 +284,7 @@ function controlEmail() {
 
 
 //ENVOI DU FORMULAIRE ET DU PANIER AU CLIC APRES CONTROLE :
+function sendCartDetails(){
 buttonOrder.addEventListener('click', (e) => {
   e.preventDefault();
   controlFirstName();
@@ -334,10 +335,14 @@ buttonOrder.addEventListener('click', (e) => {
   } else {
     alert("Veuillez remplir correctement le formulaire");
   };
+//vider le localStorage
+localStorage.clear();
 
   //syntaxe du addEventListener 
 });
+}
 
+sendCartDetails();
 
 
 
