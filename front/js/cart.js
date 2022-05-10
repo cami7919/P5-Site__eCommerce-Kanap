@@ -100,6 +100,7 @@ console.log(inCart);
 
 
 //récuperer toute la description de chaque produit, pour les afficher :
+function getAndDisplayProduct(){
 for (let product of inCart) {
   let idProduct = product._id;
   let quantityProduct = product.quantity;
@@ -188,7 +189,7 @@ for (let product of inCart) {
       //syntaxe de l'appel des produit (l.12 et l.19)
     })
 }
-
+}
 
 
 
@@ -342,6 +343,11 @@ localStorage.clear();
 });
 }
 
+
+//----------------------------------------------------------------------------------------------------
+//APPEL DES DEUX PRINCIPALES FONCTIONS DE LA PAGE
+
+getAndDisplayProduct();
 sendCartDetails();
 
 
