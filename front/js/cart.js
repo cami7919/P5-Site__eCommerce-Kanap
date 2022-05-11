@@ -290,7 +290,7 @@ buttonOrder.addEventListener('click', (e) => {
     //mettre les valeurs du formulaire et le panier dans un objet
     let cartProduct = [];
     cartProduct = inCart.map((p) => p._id);
-    console.log(cartProduct)
+    
 
     const dataToSend = {
       products: cartProduct,
@@ -311,8 +311,7 @@ buttonOrder.addEventListener('click', (e) => {
         response => response.json()
       )
 
-      .then(data => {
-        console.log(data)
+      .then(data => {        
         localStorage.setItem('orderId', data.orderId);
         window.location.href = "confirmation.html?id=" + data.orderId;
       });
