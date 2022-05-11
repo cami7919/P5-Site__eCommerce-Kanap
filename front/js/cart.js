@@ -19,10 +19,10 @@ function removeProduct() {
       let productToRemove = btnRemove.closest('.cart__item');
       let productToRemoveId = productToRemove.dataset.id;
       let productToRemoveColor = productToRemove.dataset.color;
-      
+
       //filtrer le panier, pour supprimer l'élément spécifié
       inCart = inCart.filter(elt => elt._id !== productToRemoveId || elt.colors !== productToRemoveColor);
-      
+
       //enregistrer la variable modifiée dans localStorage, puis rafraichir la page
       localStorage.setItem('cart', JSON.stringify(inCart));
       location.reload();
@@ -41,7 +41,7 @@ function modifyQuantity(product, quantity) {
       e.preventDefault();
 
       let newQuantity = e.target.value;
-      
+
       //récupérer l'id du produit correspondant à cette modification de quantité
       let productOfItemQuantity = itemQuantity.closest('.cart__item');
       let productOfItemQuantityId = productOfItemQuantity.dataset.id;
@@ -49,7 +49,7 @@ function modifyQuantity(product, quantity) {
 
       let productToModifyQuantity = inCart.find(elt => elt._id == productOfItemQuantityId && elt.colors == productOfItemQuantityColor);
       //lui appliquer la nouvelle quantité
-      productToModifyQuantity.quantity = newQuantity;      
+      productToModifyQuantity.quantity = newQuantity;
       //et enregistrer le tout dans localStorage
       localStorage.setItem('cart', JSON.stringify(inCart));
 
@@ -76,17 +76,13 @@ async function getTotalPrice() {
   //faire le total des prix
   let totalPrice = 0;
   for (let product of inCart) {
-    let idProduct = product._id;    
+    let idProduct = product._id;
     let productQuantity = product.quantity;
-        
-    fetch('http://localhost:3000/api/products/' + idProduct)
-      .then((response) => response.json())
-      .then((productDescription) => {
-        let productPrice = productDescription.price;        
-        totalPrice += productPrice * parseFloat(productQuantity);        
-        //afficher le prix total :
-        document.getElementById('totalPrice').innerHTML = totalPrice;
-      })
+    let productDescription = await getProductDescriptionFromAPI(idProduct);
+    let productPrice = productDescription.price;
+    totalPrice += productPrice * parseFloat(productQuantity);
+    //afficher le prix total :
+    document.getElementById('totalPrice').innerHTML = totalPrice;
   }
 }
 
@@ -98,109 +94,102 @@ async function getTotalPrice() {
 let inCart = JSON.parse(localStorage.getItem('cart'));
 console.log(inCart);
 
-
-//récuperer toute la description de chaque produit, pour les afficher :
-function getAndDisplayProduct(){
-for (let product of inCart) {
-  let idProduct = product._id;
-  let quantityProduct = product.quantity;
-  let colorProduct = product.colors;
-  
-  fetch('http://localhost:3000/api/products/' + idProduct)
-    .then((response) => response.json())
-    .then((promise) => {
-      let productDescription = promise;
-
-      let productArticle = document.createElement("article")
-      document.getElementById('cart__items').appendChild(productArticle)
-      productArticle.classList.add("cart__item")
-      productArticle.setAttribute("data-id", idProduct)
-      productArticle.setAttribute("data-color", colorProduct)
-
-      let productDiv1 = document.createElement("div")
-      productArticle.appendChild(productDiv1)
-      productDiv1.classList.add("cart__item__img")
-
-      let imgProduct = document.createElement("img")
-      productDiv1.appendChild(imgProduct)
-      imgProduct.setAttribute("src", productDescription.imageUrl);
-      imgProduct.setAttribute("alt", productDescription.altTxt);
-
-      let productDiv2 = document.createElement("div")
-      productArticle.appendChild(productDiv2)
-      productDiv2.classList.add("cart__item__content")
-
-      let productDiv3 = document.createElement("div")
-      productDiv2.appendChild(productDiv3)
-      productDiv3.classList.add("cart__item__content__description")
-
-      let productName = document.createElement("h2")
-      productDiv3.appendChild(productName)
-      productName.innerHTML = productDescription.name
-
-      //ici on récupère des données de local storage (variables nommées plus haut)
-      let productColor = document.createElement("p")
-      productDiv3.appendChild(productColor)
-      productColor.innerHTML = colorProduct
-
-      let productPrice = document.createElement("p")
-      productDiv3.appendChild(productPrice)
-      productPrice.innerHTML = productDescription.price * quantityProduct + ',00 €'
-
-
-      let productDiv4 = document.createElement("div")
-      productDiv2.appendChild(productDiv4)
-      productDiv4.classList.add("cart__item__content__settings")
-
-      let productDiv5 = document.createElement("div")
-      productDiv4.appendChild(productDiv5)
-      productDiv5.classList.add("cart__item__content__settings__quantity")
-
-
-      //ci-dessous, on récupère des données de local storage (variables nommées plus haut)
-      let productQuantity = document.createElement("p");
-      productDiv5.appendChild(productQuantity);
-      productQuantity.innerHTML = 'Qté :';
-
-      let productInput = document.createElement("input");
-      productDiv5.appendChild(productInput);
-      productInput.setAttribute("type", "number");
-      productInput.setAttribute("name", "itemQuantity");
-      productInput.setAttribute("min", "1");
-      productInput.setAttribute("max", "100");
-      productInput.setAttribute("value", quantityProduct);
-      productInput.classList.add("itemQuantity");
-
-
-      let productDiv6 = document.createElement("div");
-      productDiv4.appendChild(productDiv6);
-      productDiv6.classList.add("cart__item__content__settings__delete");
-
-      let productDelete = document.createElement("p");
-      productDiv6.appendChild(productDelete);
-      productDelete.classList.add("deleteItem");
-      productDelete.innerHTML = 'Supprimer';
-
-
-      removeProduct()
-      modifyQuantity();
-      getTotalQuantity();
-      getTotalPrice();
-      //syntaxe de l'appel des produit (l.12 et l.19)
-    })
-}
+//récupérer la description des produits du panier:
+async function getProductDescriptionFromAPI(idProduct) {
+  let response = await fetch('http://localhost:3000/api/products/' + idProduct);
+  let data = await response.json();
+  return data;
 }
 
 
+//afficher les produits du panier :
+async function displayProducts() {
+  for (let product of inCart) {
+    let idProduct = product._id;
+    let quantityProduct = product.quantity;
+    let colorProduct = product.colors;
 
-//VERIFIER LES DONNEES SAISIES PAR L UTILISATEUR : regex
-let buttonOrder = document.getElementById('order');
+    let productDescription = await getProductDescriptionFromAPI(idProduct);
 
-let inputFirstName = document.querySelector('#firstName').value;
-let inputLastName = document.querySelector('#lastName').value;
-let inputCity = document.querySelector('#city').value;
-let inputAddress = document.querySelector('#address').value;
-let inputEmail = document.querySelector('#email').value;
+    let productArticle = document.createElement("article")
+    document.getElementById('cart__items').appendChild(productArticle)
+    productArticle.classList.add("cart__item")
+    productArticle.setAttribute("data-id", idProduct)
+    productArticle.setAttribute("data-color", colorProduct)
+
+    let productDiv1 = document.createElement("div")
+    productArticle.appendChild(productDiv1)
+    productDiv1.classList.add("cart__item__img")
+
+    let imgProduct = document.createElement("img")
+    productDiv1.appendChild(imgProduct)
+    imgProduct.setAttribute("src", productDescription.imageUrl);
+    imgProduct.setAttribute("alt", productDescription.altTxt);
+
+    let productDiv2 = document.createElement("div")
+    productArticle.appendChild(productDiv2)
+    productDiv2.classList.add("cart__item__content")
+
+    let productDiv3 = document.createElement("div")
+    productDiv2.appendChild(productDiv3)
+    productDiv3.classList.add("cart__item__content__description")
+
+    let productName = document.createElement("h2")
+    productDiv3.appendChild(productName)
+    productName.innerHTML = productDescription.name
+
+    //ici on récupère des données de local storage (variables nommées plus haut)
+    let productColor = document.createElement("p")
+    productDiv3.appendChild(productColor)
+    productColor.innerHTML = colorProduct
+
+    let productPrice = document.createElement("p")
+    productDiv3.appendChild(productPrice)
+    productPrice.innerHTML = productDescription.price * quantityProduct + ',00 €'
+
+
+    let productDiv4 = document.createElement("div")
+    productDiv2.appendChild(productDiv4)
+    productDiv4.classList.add("cart__item__content__settings")
+
+    let productDiv5 = document.createElement("div")
+    productDiv4.appendChild(productDiv5)
+    productDiv5.classList.add("cart__item__content__settings__quantity")
+
+
+    //ci-dessous, on récupère des données de local storage (variables nommées plus haut)
+    let productQuantity = document.createElement("p");
+    productDiv5.appendChild(productQuantity);
+    productQuantity.innerHTML = 'Qté :';
+
+    let productInput = document.createElement("input");
+    productDiv5.appendChild(productInput);
+    productInput.setAttribute("type", "number");
+    productInput.setAttribute("name", "itemQuantity");
+    productInput.setAttribute("min", "1");
+    productInput.setAttribute("max", "100");
+    productInput.setAttribute("value", quantityProduct);
+    productInput.classList.add("itemQuantity");
+
+
+    let productDiv6 = document.createElement("div");
+    productDiv4.appendChild(productDiv6);
+    productDiv6.classList.add("cart__item__content__settings__delete");
+
+    let productDelete = document.createElement("p");
+    productDiv6.appendChild(productDelete);
+    productDelete.classList.add("deleteItem");
+    productDelete.innerHTML = 'Supprimer';
+
+
+    removeProduct()
+    modifyQuantity();
+    getTotalQuantity();
+    getTotalPrice();
+    //syntaxe de l'appel des produit (l.12 et l.19)
+
+  }
+}
 
 //cette regex autorise lettres chiffres apostrophe tiret et espace, entre 2 et 15 caracteres
 const regexName = (name) => {
@@ -246,7 +235,7 @@ function controlLastName() {
 }
 
 function controlCity() {
-  let inputCity = document.querySelector('#city').value;
+  let inputLastCity = document.querySelector('#city').value;
   if (regexName(inputLastCity)) {
     document.getElementById('cityErrorMsg').innerText = "";
     return true;
@@ -281,17 +270,12 @@ function controlEmail() {
   }
 }
 
-
-
-
 //ENVOI DU FORMULAIRE ET DU PANIER AU CLIC APRES CONTROLE :
-function sendCartDetails(){
+function sendCartDetails() {
+
+  let buttonOrder = document.getElementById('order');
 buttonOrder.addEventListener('click', (e) => {
   e.preventDefault();
-  controlFirstName();
-  controlLastName();
-  controlAddress();
-  controlEmail();
 
   if (controlFirstName() && controlLastName() && controlAddress() && controlEmail()) {
     //récupération des valeurs du formulaire, à mettre dans un objet, lui même à enregistrer dans localStorage  
@@ -332,14 +316,9 @@ buttonOrder.addEventListener('click', (e) => {
         localStorage.setItem('orderId', data.orderId);
         window.location.href = "confirmation.html?id=" + data.orderId;
       });
-
   } else {
     alert("Veuillez remplir correctement le formulaire");
   };
-//vider le localStorage
-localStorage.clear();
-
-  //syntaxe du addEventListener 
 });
 }
 
@@ -347,8 +326,10 @@ localStorage.clear();
 //----------------------------------------------------------------------------------------------------
 //APPEL DES DEUX PRINCIPALES FONCTIONS DE LA PAGE
 
-getAndDisplayProduct();
+displayProducts();
+
 sendCartDetails();
+
 
 
 
